@@ -58,6 +58,10 @@
                 padding: .5rem 0 .5rem 1rem;
             }
 
+            main .thread-section p {
+                white-space: pre-wrap;
+            }
+
             .btn {
                 border: none;
                 cursor: pointer;
@@ -116,12 +120,15 @@
             $(document).ready(function() {
                 /* Add a tweet to the thread */
                 var updateThread = function(currentTweet) {
+                    //currentTweet=currentTweet.replace(/\n/g, "<br />");
                     var threadTweetElement = " \
                         <div class='thread-tweet'> \
                             <p>" + currentTweet + "</p> \
                             <input class='btn btn-copy-tweet' type='button' value='Copy Tweet'> \
                         </div> \
                     ";
+
+                    console.log(threadTweetElement);
 
                     $(".thread-section").append(threadTweetElement);
                 };
@@ -132,6 +139,8 @@
                     //var tweetWordArray = tweetContent.split(/\n|\t| /);
                     var tweetWordArray = tweetContent.split(" ");
                     var tweetCharArray = tweetContent.split("");
+
+                    console.log(tweetWordArray);
 
                     $(".thread-section").empty();
 
@@ -168,10 +177,10 @@
                 /* Copy the content of the tweet in the thread to the clipboard */
                 $(".thread-section").on("click", ".btn-copy-tweet", function(e) {
                     var $temp = $("<input>");
-                    var tweetContent = $(this).parent().find("p").text();
+                    var tweetContent = $(this).parent().find("p").html();
                     
                     $("body").append($temp);                    
-                    $temp.val(tweetContent).select();
+                    $temp.html(tweetContent).select();
 
                     document.execCommand("copy");
                     $temp.remove();
