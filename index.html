@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Twitter Thread Maker</title>
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #fdfeff;
+                font-family: Helvetica, Arial, sans-serif;
+            }
+
+            header {
+                margin: 0 auto;
+                max-width: 600px;
+                padding: 2rem 1rem 1rem;
+                text-align: center;
+            }
+
+            header h1,
+            header h2 {
+                font-size: 1rem;
+                font-weight: lighter;
+            }
+
+            header h1,
+            header h2 a {
+                color: #1da1f2;
+            }
+
+            header h2 {
+                color: #a0a0a0;
+            }
+
+            main {
+                margin: 0 auto;
+                max-width: 480px;
+                padding: 1.5rem 1rem;
+            }
+
+            main form textarea {
+                box-sizing: border-box;
+                margin-bottom: .25rem;
+                max-width: 100%;
+                padding: .5rem;
+                width: 100%;
+            }
+
+            main .thread-section {
+                border-left: 2px solid #1da1f2;
+                color: #555;
+                display: none;
+                margin-top: 3rem;
+                padding: .5rem 0 .5rem 1rem;
+            }
+
+            .btn {
+                border: none;
+                cursor: pointer;
+                font-weight: bold;
+                padding: 1rem 2rem;
+            }
+
+            .btn:focus {
+                outline: none;
+            }
+
+            .btn.btn-generate-thread,
+            .btn.btn-copy-tweet {
+                background-color: #1da1f2;
+                color: #fff;
+                display: block;
+                margin-left: auto;
+                margin-right: 0;
+                transition: .3s ease-in-out;
+            }
+
+            .btn.btn.btn-generate-thread:hover,
+            .btn.btn.btn-generate-thread:focus,
+            .btn.btn.btn-copy-tweet:hover,
+            .btn.btn.btn-copy-tweet:focus {
+                background-color: #1781c2;
+            }
+        </style>
+	</head>
+	<body>
+		<header>
+            <h1>Twitter Thread Maker</h1>
+            <h2>by <a href="https://twitter.com/jvitor_flores">Vitor Flores</a> and <a href="https://twitter.com/herojourneyon">Daniel</a></h2>
+        </header>
+
+        <main>
+            <form action="">
+                <textarea name="tweet-content" id="input-tweet-content" cols="30" rows="10"></textarea>
+                <input class="btn btn-generate-thread" id="btn-generate-thread" type="button" value="Generate Thread">
+            </form>
+
+            <div class="thread-section">
+                <div class="thread-tweet">
+                    <p>asdasdasdasdasdasdasd</p>
+                    <input class="btn btn-copy-tweet" type="button" value="Copy Tweet">
+                </div>
+                <div class="thread-tweet">
+                    <p>asdasdasdasdasdasdasd</p>
+                    <input class="btn btn-copy-tweet" type="button" value="Copy Tweet">
+                </div>
+            </div>
+        </main>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                /* Add a tweet to the thread */
+                var updateThread = function(currentTweet) {
+                    var threadTweetElement = " \
+                        <div class='thread-tweet'> \
+                            <p>" + currentTweet + "</p> \
+                            <input class='btn btn-copy-tweet' type='button' value='Copy Tweet'> \
+                        </div> \
+                    ";
+
+                    $(".thread-section").append(threadTweetElement);
+                };
+
+                /* Generate the thread */
+                $("#btn-generate-thread").on("click", function(e) {
+                    var tweetContent = $("#input-tweet-content").val();
+                    //var tweetWordArray = tweetContent.split(/\n|\t| /);
+                    var tweetWordArray = tweetContent.split(" ");
+                    var tweetCharArray = tweetContent.split("");
+
+                    $(".thread-section").empty();
+
+                    if (tweetContent.length > 0) {
+                        $(".thread-section").css("display", "block");
+                    } else {
+                        $(".thread-section").css("display", "none");
+                    }
+
+                    var currentTweet = "";
+                    for (var i = 0; i < tweetWordArray.length; i++) {
+                        /* If it's still possible to fit more words in the tweet */
+                        if (currentTweet.length + tweetWordArray[i].length < 275) {
+                            if (currentTweet != "") {
+                                tweetWordArray[i] = " " + tweetWordArray[i];
+                            }
+
+                            currentTweet += tweetWordArray[i];
+                        } else {
+                            currentTweet += " (+)";
+
+                            /* Add the tweet to the thread */
+                            updateThread(currentTweet);
+
+                            currentTweet = tweetWordArray[i];
+                            currentWord = "";
+                            continue;
+                        }
+                    }
+
+                    updateThread(currentTweet);
+                });
+
+                /* Copy the content of the tweet in the thread to the clipboard */
+                $(".thread-section").on("click", ".btn-copy-tweet", function(e) {
+                    var $temp = $("<input>");
+                    var tweetContent = $(this).parent().find("p").text();
+                    
+                    $("body").append($temp);                    
+                    $temp.val(tweetContent).select();
+
+                    document.execCommand("copy");
+                    $temp.remove();
+                });
+            });
+        </script>
+	</body>
+</html>
